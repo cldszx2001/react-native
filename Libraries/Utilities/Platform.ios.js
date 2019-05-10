@@ -10,7 +10,12 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
+
+export type PlatformSelectSpec<D, I> = {
+  default?: D,
+  ios?: I,
+};
 
 const Platform = {
   OS: 'ios',
@@ -33,10 +38,14 @@ const Platform = {
     return constants ? constants.interfaceIdiom === 'tv' : false;
   },
   get isTesting(): boolean {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.isTesting;
+    if (__DEV__) {
+      const constants = NativeModules.PlatformConstants;
+      return constants && constants.isTesting;
+    }
+    return false;
   },
-  select: (obj: Object) => ('ios' in obj ? obj.ios : obj.default),
+  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
+    'ios' in spec ? spec.ios : spec.default,
 };
 
 module.exports = Platform;

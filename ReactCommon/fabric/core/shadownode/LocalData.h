@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
 #include <folly/dynamic.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -28,6 +28,8 @@ using SharedLocalData = std::shared_ptr<const LocalData>;
  */
 class LocalData : public Sealable, public DebugStringConvertible {
  public:
+  using Shared = std::shared_ptr<LocalData const>;
+
   virtual ~LocalData() = default;
 
   virtual folly::dynamic getDynamic() const {

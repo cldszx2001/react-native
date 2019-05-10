@@ -10,14 +10,14 @@
 
 'use strict';
 
-const IncrementalGroup = require('IncrementalGroup');
+const IncrementalGroup = require('./IncrementalGroup');
 const PropTypes = require('prop-types');
-const React = require('React');
-const View = require('View');
+const React = require('react');
+const View = require('../Components/View/View');
 
-import type {Context} from 'Incremental';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {LayoutEvent} from 'CoreEventTypes';
+import type {Context} from './Incremental';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {LayoutEvent} from '../Types/CoreEventTypes';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
@@ -68,14 +68,15 @@ class IncrementalPresenter extends React.Component<Props> {
     this.props.onDone && this.props.onDone();
   }
   render() {
+    let style: ViewStyleProp;
     if (
       this.props.disabled !== true &&
       this.context.incrementalGroupEnabled !== false &&
       !this._isDone
     ) {
-      var style = [this.props.style, {opacity: 0, position: 'absolute'}];
+      style = [this.props.style, {opacity: 0, position: 'absolute'}];
     } else {
-      var style = this.props.style;
+      style = this.props.style;
     }
     return (
       <IncrementalGroup

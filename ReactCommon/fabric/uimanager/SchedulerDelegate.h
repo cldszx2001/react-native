@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/uimanager/ShadowViewMutation.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNode.h>
+#include <react/mounting/MountingTransaction.h>
+#include <react/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
@@ -25,14 +26,14 @@ class SchedulerDelegate {
    * to construct a new one.
    */
   virtual void schedulerDidFinishTransaction(
-      Tag rootTag,
-      const ShadowViewMutationList &mutations) = 0;
+      MountingCoordinator::Shared const &mountingCoordinator) = 0;
 
   /*
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
-      ComponentName componentName) = 0;
+      SurfaceId surfaceId,
+      const ShadowView &shadowView) = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

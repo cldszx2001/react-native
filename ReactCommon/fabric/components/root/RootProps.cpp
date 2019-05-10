@@ -7,8 +7,8 @@
 
 #include "RootProps.h"
 
-#include <fabric/components/view/YogaLayoutableShadowNode.h>
-#include <fabric/components/view/conversions.h>
+#include <react/components/view/YogaLayoutableShadowNode.h>
+#include <react/components/view/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -16,20 +16,25 @@ namespace react {
 static YGStyle yogaStyleFromLayoutConstraints(
     const LayoutConstraints &layoutConstraints) {
   auto yogaStyle = YGStyle{};
-  yogaStyle.minDimensions[YGDimensionWidth] =
+  yogaStyle.minDimensions()[YGDimensionWidth] =
       yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
-  yogaStyle.minDimensions[YGDimensionHeight] =
+  yogaStyle.minDimensions()[YGDimensionHeight] =
       yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
 
-  yogaStyle.maxDimensions[YGDimensionWidth] =
+  yogaStyle.maxDimensions()[YGDimensionWidth] =
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
-  yogaStyle.maxDimensions[YGDimensionHeight] =
+  yogaStyle.maxDimensions()[YGDimensionHeight] =
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
 
-  yogaStyle.direction =
+  yogaStyle.direction() =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
 
   return yogaStyle;
+}
+
+RootProps::RootProps(const RootProps &sourceProps, const RawProps &rawProps) {
+  // `RootProps` cannot be constructed from `RawProps`.
+  assert(false);
 }
 
 RootProps::RootProps(

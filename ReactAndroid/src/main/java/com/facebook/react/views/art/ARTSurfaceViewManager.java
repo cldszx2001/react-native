@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 public class ARTSurfaceViewManager extends
     BaseViewManager<ARTSurfaceView, ARTSurfaceViewShadowNode> {
 
-  protected static final String REACT_CLASS = "ARTSurfaceView";
+  public static final String REACT_CLASS = "ARTSurfaceView";
 
   private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
     @Override
@@ -60,7 +60,8 @@ public class ARTSurfaceViewManager extends
 
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    root.setSurfaceTextureListener((ARTSurfaceViewShadowNode) extraData);
+    ARTSurfaceViewShadowNode shadowNode = (ARTSurfaceViewShadowNode) extraData;
+    shadowNode.setupSurfaceTextureListener(root);
   }
 
   @Override

@@ -48,13 +48,6 @@ const FlexTestAppStyles = StyleSheet.create({
   child: {
     flex: 1,
   },
-  absolute: {
-    position: 'absolute',
-    top: 15,
-    left: 10,
-    width: 50,
-    height: 60,
-  },
   bgRed: {
     backgroundColor: '#ff0000',
   },
@@ -97,9 +90,7 @@ const FlexWithTextStyles = StyleSheet.create({
 });
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionTestApp extends React.Component<
-  AbsolutePositionTestAppProps,
-> {
+class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
   render() {
     return (
       <View
@@ -122,9 +113,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 });
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionBottomRightTestApp extends React.Component<
-  AbsolutePositionBottomRightTestAppProps,
-> {
+class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
   render() {
     return (
       <View

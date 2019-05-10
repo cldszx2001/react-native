@@ -10,15 +10,15 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {ART, Platform, View} = ReactNative;
+const React = require('react');
+const {ART, Platform, View} = require('react-native');
 
-const {Surface, Path, Group, Transform, Shape} = ART;
+const {Surface, Path, Group, Shape} = ART;
 
-var scale = Platform.isTV ? 4 : 1;
+const scale = Platform.isTV ? 4 : 1;
 
-class ARTExample extends React.Component<{}> {
+type Props = $ReadOnly<{||}>;
+class ARTExample extends React.Component<Props> {
   render() {
     const pathRect = new Path()
       .moveTo(scale * 0, scale * 0)

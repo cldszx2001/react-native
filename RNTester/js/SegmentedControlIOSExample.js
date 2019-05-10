@@ -10,9 +10,8 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {SegmentedControlIOS, Text, View, StyleSheet} = ReactNative;
+const React = require('react');
+const {SegmentedControlIOS, Text, View, StyleSheet} = require('react-native');
 
 class BasicSegmentedControlExample extends React.Component<{}> {
   render() {
@@ -132,7 +131,7 @@ class EventSegmentedControlExample extends React.Component<
   };
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     textAlign: 'center',

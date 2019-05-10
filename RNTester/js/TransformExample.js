@@ -10,9 +10,8 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const {Animated, StyleSheet, Text, View} = require('react-native');
 
 class Flip extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -54,10 +53,8 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
         <Animated.View
           style={[
             styles.flipCard,
+            styles.flipCard1,
             {
-              position: 'absolute',
-              top: 0,
-              backgroundColor: 'red',
               transform: [
                 {perspective: 850},
                 {
@@ -76,7 +73,7 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     height: 500,
   },
@@ -177,6 +174,11 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'blue',
     backfaceVisibility: 'hidden',
+  },
+  flipCard1: {
+    position: 'absolute',
+    top: 0,
+    backgroundColor: 'red',
   },
   flipText: {
     width: 90,

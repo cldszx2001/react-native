@@ -9,8 +9,8 @@
  */
 
 'use strict';
-jest.unmock('Platform');
-const Platform = require('Platform');
+jest.unmock('../../Utilities/Platform');
+const Platform = require('../../Utilities/Platform');
 let requestId = 1;
 
 function setRequestId(id) {
@@ -20,29 +20,31 @@ function setRequestId(id) {
   requestId = id;
 }
 
-jest.dontMock('event-target-shim').setMock('NativeModules', {
-  Networking: {
-    addListener: function() {},
-    removeListeners: function() {},
-    sendRequest(options, callback) {
-      if (typeof callback === 'function') {
-        // android does not pass a callback
-        callback(requestId);
-      }
+jest
+  .dontMock('event-target-shim')
+  .setMock('../../BatchedBridge/NativeModules', {
+    Networking: {
+      addListener: function() {},
+      removeListeners: function() {},
+      sendRequest(options, callback) {
+        if (typeof callback === 'function') {
+          // android does not pass a callback
+          callback(requestId);
+        }
+      },
+      abortRequest: function() {},
     },
-    abortRequest: function() {},
-  },
-});
+  });
 
-const XMLHttpRequest = require('XMLHttpRequest');
+const XMLHttpRequest = require('../XMLHttpRequest');
 
 describe('XMLHttpRequest', function() {
-  var xhr;
-  var handleTimeout;
-  var handleError;
-  var handleLoad;
-  var handleReadyStateChange;
-  var handleLoadEnd;
+  let xhr;
+  let handleTimeout;
+  let handleError;
+  let handleLoad;
+  let handleReadyStateChange;
+  let handleLoadEnd;
 
   beforeEach(() => {
     xhr = new XMLHttpRequest();
@@ -197,7 +199,7 @@ describe('XMLHttpRequest', function() {
     xhr.send();
 
     xhr.upload.onprogress = jest.fn();
-    var handleProgress = jest.fn();
+    const handleProgress = jest.fn();
     xhr.upload.addEventListener('progress', handleProgress);
     setRequestId(6);
     xhr.__didUploadProgress(requestId, 42, 100);

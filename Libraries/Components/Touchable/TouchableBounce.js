@@ -9,22 +9,22 @@
  */
 'use strict';
 
-const Animated = require('Animated');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
+const Animated = require('../../Animated/src/Animated');
+const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
+const DeprecatedEdgeInsetsPropType = require('../../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
+const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
+const Platform = require('../../Utilities/Platform');
 const PropTypes = require('prop-types');
-const React = require('React');
-const Touchable = require('Touchable');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const React = require('react');
+const Touchable = require('./Touchable');
+const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
 
 const createReactClass = require('create-react-class');
 
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
-
-type Event = Object;
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 
 type State = {
   animationID: ?number,
@@ -36,8 +36,8 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
-  onPressWithCompletion?: ?Function,
-  onPressAnimationComplete?: ?Function,
+  onPressWithCompletion?: ?(fn: () => void) => void,
+  onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
   releaseBounciness?: ?number,
@@ -53,9 +53,12 @@ type Props = $ReadOnly<{|
  */
 const TouchableBounce = ((createReactClass({
   displayName: 'TouchableBounce',
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
@@ -95,7 +98,7 @@ const TouchableBounce = ((createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?Function,
+    callback?: ?() => void,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -109,17 +112,31 @@ const TouchableBounce = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(0.93, 0.1, 0);
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(1, 0.4, 0);
+    }
+    this.props.onBlur && this.props.onBlur(e);
+  },
+
+  touchableHandlePress: function(e: PressEvent) {
     const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -147,7 +164,7 @@ const TouchableBounce = ((createReactClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
-  touchableGetHitSlop: function(): ?Object {
+  touchableGetHitSlop: function(): ?EdgeInsetsProp {
     return this.props.hitSlop;
   },
 
@@ -167,6 +184,12 @@ const TouchableBounce = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
+        clickable={
+          this.props.clickable !== false &&
+          this.props.onPress !== undefined &&
+          !this.props.disabled
+        }
+        onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
           this.touchableHandleResponderTerminationRequest

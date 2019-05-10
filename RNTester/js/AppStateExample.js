@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {AppState, Text, View} = ReactNative;
+const {AppState, Text, View} = require('react-native');
 
 class AppStateSubscription extends React.Component<
   $FlowFixMeProps,
@@ -39,7 +38,7 @@ class AppStateSubscription extends React.Component<
   };
 
   _handleAppStateChange = appState => {
-    var previousAppStates = this.state.previousAppStates.slice();
+    const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({
       appState,

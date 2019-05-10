@@ -4,20 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
-import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
-import type React from 'React';
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {
+  LayoutEvent,
+  PressEvent,
+  TextLayoutEvent,
+} from '../Types/CoreEventTypes';
+import type {Node} from 'react';
+import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   AccessibilityRole,
   AccessibilityStates,
-  AccessibilityTrait,
-} from 'ViewAccessibility';
+} from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -29,16 +32,17 @@ export type PressRetentionOffset = $ReadOnly<{|
 /**
  * @see https://facebook.github.io/react-native/docs/text.html#reference
  */
-export type TextProps = $ReadOnly<{
+export type TextProps = $ReadOnly<{|
   /**
    * Indicates whether the view is an accessibility element.
    *
    * See https://facebook.github.io/react-native/docs/text.html#accessible
    */
   accessible?: ?boolean,
+  accessibilityHint?: ?Stringish,
+  accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
-  accessibilityTraits?: ?(AccessibilityTrait | Array<AccessibilityTrait>),
 
   /**
    * Whether font should be scaled down automatically.
@@ -53,7 +57,7 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#allowfontscaling
    */
   allowFontScaling?: ?boolean,
-  children?: ?React.Node,
+  children?: ?Node,
 
   /**
    * When `numberOfLines` is set, this prop defines how text will be
@@ -106,12 +110,13 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#onpress
    */
   onPress?: ?(event: PressEvent) => mixed,
-  onResponderGrant?: ?Function,
-  onResponderMove?: ?Function,
-  onResponderRelease?: ?Function,
-  onResponderTerminate?: ?Function,
-  onResponderTerminationRequest?: ?Function,
-  onStartShouldSetResponder?: ?Function,
+  onResponderGrant?: ?(event: PressEvent, dispatchID: string) => void,
+  onResponderMove?: ?(event: PressEvent) => void,
+  onResponderRelease?: ?(event: PressEvent) => void,
+  onResponderTerminate?: ?(event: PressEvent) => void,
+  onResponderTerminationRequest?: ?() => boolean,
+  onStartShouldSetResponder?: ?() => boolean,
+  onMoveShouldSetResponder?: ?() => boolean,
   onTextLayout?: ?(event: TextLayoutEvent) => mixed,
 
   /**
@@ -128,7 +133,7 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#selectable
    */
   selectable?: ?boolean,
-  style?: ?DangerouslyImpreciseStyleProp,
+  style?: ?TextStyleProp,
 
   /**
    * Used to locate this view in end-to-end tests.
@@ -155,6 +160,8 @@ export type TextProps = $ReadOnly<{
    */
   selectionColor?: ?string,
 
+  dataDetectorType?: ?('phoneNumber' | 'link' | 'email' | 'none' | 'all'),
+
   /**
    * Set text break strategy on Android.
    *
@@ -180,4 +187,4 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
-}>;
+|}>;

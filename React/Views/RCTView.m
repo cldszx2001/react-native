@@ -15,6 +15,8 @@
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
 
+UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+
 @implementation UIView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
@@ -156,12 +158,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  if (!_accessibilityActions.count) {
+  if (!self.accessibilityActions.count) {
     return nil;
   }
 
   NSMutableArray *actions = [NSMutableArray array];
-  for (NSString *action in _accessibilityActions) {
+  for (NSString *action in self.accessibilityActions) {
     [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action
                                                                   target:self
                                                                 selector:@selector(didActivateAccessibilityCustomAction:)]];
@@ -182,6 +184,67 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   });
 
   return YES;
+}
+
+- (NSString *)accessibilityValue
+{
+  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
+    for (NSString *state in self.accessibilityStates) {
+      if ([state isEqualToString:@"checked"]) {
+        return @"1";
+      } else if ([state isEqualToString:@"unchecked"]) {
+        return @"0";
+      }
+    }
+  }
+  NSMutableArray *valueComponents = [NSMutableArray new];
+  static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
+  static dispatch_once_t onceToken1;
+  dispatch_once(&onceToken1, ^{
+    roleDescriptions = @{
+                         @"alert" : @"alert",
+                         @"checkbox" : @"checkbox",
+                         @"combobox" : @"combo box",
+                         @"menu" : @"menu",
+                         @"menubar" : @"menu bar",
+                         @"menuitem" : @"menu item",
+                         @"progressbar" : @"progress bar",
+                         @"radio" : @"radio button",
+                         @"radiogroup" : @"radio group",
+                         @"scrollbar" : @"scroll bar",
+                         @"spinbutton" : @"spin button",
+                         @"switch" : @"switch",
+                         @"tab" : @"tab",
+                         @"tablist" : @"tab list",
+                         @"timer" : @"timer",
+                         @"toolbar" : @"tool bar",
+                         };
+  });
+  static NSDictionary<NSString *, NSString *> *stateDescriptions = nil;
+  static dispatch_once_t onceToken2;
+  dispatch_once(&onceToken2, ^{
+    stateDescriptions = @{
+                          @"checked" : @"checked",
+                          @"unchecked" : @"not checked",
+                          @"busy" : @"busy",
+                          @"expanded" : @"expanded",
+                          @"collapsed" : @"collapsed",
+                          };
+  });
+  NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
+  if (roleDescription) {
+    [valueComponents addObject:roleDescription];
+  }
+  for (NSString *state in self.accessibilityStates) {
+    NSString *stateDescription = state ? stateDescriptions[state] : nil;
+    if (stateDescription) {
+      [valueComponents addObject:stateDescription];
+    }
+  }
+  if (valueComponents.count > 0) {
+    return [valueComponents componentsJoinedByString:@",  "];
+  }
+  return nil;
 }
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
@@ -278,6 +341,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if (_onMagicTap) {
     _onMagicTap(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  if (_onAccessibilityEscape) {
+    _onAccessibilityEscape(nil);
     return YES;
   } else {
     return NO;
@@ -606,7 +679,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   const RCTBorderColors borderColors = [self borderColors];
 
   BOOL useIOSBorderRendering =
-  !RCTRunningInTestEnvironment() &&
   RCTCornerRadiiAreEqual(cornerRadii) &&
   RCTBorderInsetsAreEqual(borderInsets) &&
   RCTBorderColorsAreEqual(borderColors) &&
@@ -659,15 +731,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
       (CGFloat)1.0 / size.height
     );
   });
-
-  if (RCTRunningInTestEnvironment()) {
-    const CGSize size = self.bounds.size;
-    UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
-    [image drawInRect:(CGRect){CGPointZero, size}];
-    image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    contentsCenter = CGRectMake(0, 0, 1, 1);
-  }
 
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;

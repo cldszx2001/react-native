@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include <fabric/core/Props.h>
-#include <fabric/core/ShadowNode.h>
+#include <react/core/ConcreteState.h>
+#include <react/core/Props.h>
+#include <react/core/ShadowNode.h>
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
@@ -22,7 +24,8 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename PropsT,
-    typename EventEmitterT = EventEmitter>
+    typename EventEmitterT = EventEmitter,
+    typename StateDataT = StateData>
 class ConcreteShadowNode : public ShadowNode {
   static_assert(
       std::is_base_of<Props, PropsT>::value,
@@ -36,6 +39,8 @@ class ConcreteShadowNode : public ShadowNode {
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
+  using ConcreteState = ConcreteState<StateDataT>;
+  using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
     return ComponentName(concreteComponentName);
@@ -60,6 +65,12 @@ class ConcreteShadowNode : public ShadowNode {
     return defaultSharedProps;
   }
 
+  static ConcreteStateData initialStateData(
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor) {
+    return {};
+  }
+
   ComponentName getComponentName() const override {
     return ComponentName(concreteComponentName);
   }
@@ -73,12 +84,20 @@ class ConcreteShadowNode : public ShadowNode {
     return std::static_pointer_cast<const PropsT>(props_);
   }
 
+  const typename ConcreteState::Shared getState() const {
+    return std::static_pointer_cast<const ConcreteState>(state_);
+  }
+
   /*
    * Returns subset of children that are inherited from `SpecificShadowNodeT`.
    */
   template <typename SpecificShadowNodeT>
-  std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
-    std::vector<SpecificShadowNodeT *> children;
+  better::
+      small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+      getChildrenSlice() const {
+    better::
+        small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+            children;
     for (const auto &childShadowNode : getChildren()) {
       auto specificChildShadowNode =
           dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());

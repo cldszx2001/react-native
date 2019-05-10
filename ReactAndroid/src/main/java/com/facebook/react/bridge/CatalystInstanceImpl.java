@@ -24,6 +24,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 import java.lang.annotation.Annotation;
@@ -99,6 +100,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   // C++ parts
   private final HybridData mHybridData;
   private native static HybridData initHybrid();
+  public native JSCallInvokerHolderImpl getJSCallInvokerHolder();
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
@@ -201,17 +203,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       Collection<JavaModuleWrapper> javaModules,
       Collection<ModuleHolder> cxxModules);
 
-  /**
-   * This API is used in situations where the JS bundle is being executed not on
-   * the device, but on a host machine. In that case, we must provide two source
-   * URLs for the JS bundle: One to be used on the device, and one to be used on
-   * the remote debugging machine.
-   *
-   * @param deviceURL A source URL that is accessible from this device.
-   * @param remoteURL A source URL that is accessible from the remote machine
-   * executing the JS.
-   */
-  /* package */ void setSourceURLs(String deviceURL, String remoteURL) {
+  @Override
+  public void setSourceURLs(String deviceURL, String remoteURL) {
     mSourceURL = deviceURL;
     jniSetSourceURL(remoteURL);
   }
@@ -221,17 +214,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniRegisterSegment(segmentId, path);
   }
 
-  /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously) {
+  @Override
+  public void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously) {
     mSourceURL = assetURL;
     jniLoadScriptFromAssets(assetManager, assetURL, loadSynchronously);
   }
 
-  /* package */ void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
+  @Override
+  public void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
     mSourceURL = sourceURL;
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
-  /* package */ void loadScriptFromDeltaBundle(
+  @Override
+  public void loadScriptFromDeltaBundle(
     String sourceURL,
     NativeDeltaClient deltaClient,
     boolean loadSynchronously) {

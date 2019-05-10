@@ -10,10 +10,10 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const View = require('View');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const View = require('../Components/View/View');
 
 class StyleInspector extends React.Component<$FlowFixMeProps> {
   render() {
@@ -52,11 +52,6 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
   },
   attr: {
     fontSize: 10,

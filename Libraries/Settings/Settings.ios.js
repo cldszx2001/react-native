@@ -10,10 +10,11 @@
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const RCTSettingsManager = require('NativeModules').SettingsManager;
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+const RCTSettingsManager = require('../BatchedBridge/NativeModules')
+  .SettingsManager;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
 

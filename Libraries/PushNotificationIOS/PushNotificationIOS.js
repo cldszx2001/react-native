@@ -10,10 +10,10 @@
 
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const RCTPushNotificationManager = require('NativeModules')
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const RCTPushNotificationManager = require('../BatchedBridge/NativeModules')
   .PushNotificationManager;
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const PushNotificationEmitter = new NativeEventEmitter(
   RCTPushNotificationManager,

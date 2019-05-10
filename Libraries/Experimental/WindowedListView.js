@@ -10,23 +10,22 @@
 
 'use strict';
 
-const Batchinator = require('Batchinator');
-const IncrementalGroup = require('IncrementalGroup');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const Set = require('Set');
-const StyleSheet = require('StyleSheet');
-const Systrace = require('Systrace');
-const View = require('View');
-const ViewabilityHelper = require('ViewabilityHelper');
+const Batchinator = require('../Interaction/Batchinator');
+const IncrementalGroup = require('./IncrementalGroup');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Systrace = require('../Performance/Systrace');
+const View = require('../Components/View/View');
+const ViewabilityHelper = require('../Lists/ViewabilityHelper');
 
-const clamp = require('clamp');
-const deepDiffer = require('deepDiffer');
-const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const clamp = require('../Utilities/clamp');
+const deepDiffer = require('../Utilities/differ/deepDiffer');
+const infoLog = require('../Utilities/infoLog');
+const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+import type {NativeMethodsMixinType} from '../Renderer/shims/ReactNativeTypes';
 
 const DEBUG = false;
 
@@ -209,6 +208,7 @@ class WindowedListView extends React.Component<Props, State> {
     return (
       this._scrollRef &&
       this._scrollRef.getScrollResponder &&
+      // $FlowFixMe - it actually returns ScrollView & ScrollResponder.Mixin
       this._scrollRef.getScrollResponder()
     );
   }
@@ -777,12 +777,8 @@ class CellRenderer extends React.Component<CellProps> {
     let debug;
     if (DEBUG) {
       infoLog('render cell ' + this.props.rowIndex);
-      const Text = require('Text');
-      debug = (
-        <Text style={{backgroundColor: 'lightblue'}}>
-          Row: {this.props.rowIndex}
-        </Text>
-      );
+      const Text = require('../Text/Text');
+      debug = <Text style={styles.debug}>Row: {this.props.rowIndex}</Text>;
     }
     const style = this._includeInLayoutLatch ? styles.include : styles.remove;
     return (
@@ -819,6 +815,9 @@ const styles = StyleSheet.create({
     left: removedXOffset,
     right: -removedXOffset,
     opacity: DEBUG ? 0.1 : 0,
+  },
+  debug: {
+    backgroundColor: 'lightblue',
   },
 });
 

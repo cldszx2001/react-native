@@ -10,11 +10,11 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const View = require('View');
-const resolveBoxStyle = require('resolveBoxStyle');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const View = require('../Components/View/View');
+const resolveBoxStyle = require('./resolveBoxStyle');
 
 const blank = {
   top: 0,
@@ -86,12 +86,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
     top: -3,
-  },
-  buffer: {
-    fontSize: 10,
-    color: 'yellow',
-    flex: 1,
-    textAlign: 'center',
   },
   innerText: {
     color: 'yellow',

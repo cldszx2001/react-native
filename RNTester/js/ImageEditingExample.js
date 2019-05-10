@@ -9,9 +9,8 @@
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const {
   CameraRoll,
   Image,
   ImageEditor,
@@ -21,9 +20,9 @@ var {
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
-var PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 type ImageOffset = {|
   x: number,
@@ -50,6 +49,9 @@ class SquareImageCropper extends React.Component<
   _isMounted: boolean;
   _transformData: ImageCropData;
 
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
+   * and run Flow. */
   constructor(props) {
     super(props);
     this._isMounted = true;
@@ -68,9 +70,9 @@ class SquareImageCropper extends React.Component<
       if (!this._isMounted) {
         return;
       }
-      var edges = data.edges;
-      var edge = edges[Math.floor(Math.random() * edges.length)];
-      var randomPhoto = edge && edge.node && edge.node.image;
+      const edges = data.edges;
+      const edge = edges[Math.floor(Math.random() * edges.length)];
+      const randomPhoto = edge && edge.node && edge.node.image;
       if (randomPhoto) {
         this.setState({randomPhoto});
       }
@@ -89,7 +91,7 @@ class SquareImageCropper extends React.Component<
         <View
           style={styles.container}
           onLayout={event => {
-            var measuredWidth = event.nativeEvent.layout.width;
+            const measuredWidth = event.nativeEvent.layout.width;
             if (!measuredWidth) {
               return;
             }
@@ -111,7 +113,7 @@ class SquareImageCropper extends React.Component<
     if (!this.state.randomPhoto) {
       return <View style={styles.container} />;
     }
-    var error = null;
+    let error = null;
     if (this.state.cropError) {
       error = <Text>{this.state.cropError.message}</Text>;
     }
@@ -181,11 +183,11 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   _scaledImageSize: ImageSize;
   _horizontal: boolean;
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // Scale an image to the minimum size that is large enough to completely
     // fill the crop box.
-    var widthRatio = this.props.image.width / this.props.size.width;
-    var heightRatio = this.props.image.height / this.props.size.height;
+    const widthRatio = this.props.image.width / this.props.size.width;
+    const heightRatio = this.props.image.height / this.props.size.height;
     this._horizontal = widthRatio > heightRatio;
     if (this._horizontal) {
       this._scaledImageSize = {
@@ -234,12 +236,12 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 
   _updateTransformData(offset, scaledImageSize, croppedImageSize) {
-    var offsetRatioX = offset.x / scaledImageSize.width;
-    var offsetRatioY = offset.y / scaledImageSize.height;
-    var sizeRatioX = croppedImageSize.width / scaledImageSize.width;
-    var sizeRatioY = croppedImageSize.height / scaledImageSize.height;
+    const offsetRatioX = offset.x / scaledImageSize.width;
+    const offsetRatioY = offset.y / scaledImageSize.height;
+    const sizeRatioX = croppedImageSize.width / scaledImageSize.width;
+    const sizeRatioY = croppedImageSize.height / scaledImageSize.height;
 
-    var cropData: ImageCropData = {
+    const cropData: ImageCropData = {
       offset: {
         x: this.props.image.width * offsetRatioX,
         y: this.props.image.height * offsetRatioY,
@@ -275,19 +277,7 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 }
 
-exports.framework = 'React';
-exports.title = 'ImageEditor';
-exports.description = 'Cropping and scaling with ImageEditor';
-exports.examples = [
-  {
-    title: 'Image Cropping',
-    render() {
-      return <SquareImageCropper />;
-    },
-  },
-];
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: 'stretch',
@@ -311,3 +301,15 @@ var styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+exports.framework = 'React';
+exports.title = 'ImageEditor';
+exports.description = 'Cropping and scaling with ImageEditor';
+exports.examples = [
+  {
+    title: 'Image Cropping',
+    render() {
+      return <SquareImageCropper />;
+    },
+  },
+];

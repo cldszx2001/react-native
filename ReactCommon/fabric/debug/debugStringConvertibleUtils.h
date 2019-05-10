@@ -12,31 +12,13 @@
 #include <string>
 #include <vector>
 
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <folly/Conv.h>
-#include <folly/Optional.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-
-inline std::string toString(const std::string &value) {
-  return value;
-}
-inline std::string toString(const int &value) {
-  return folly::to<std::string>(value);
-}
-inline std::string toString(const bool &value) {
-  return folly::to<std::string>(value);
-}
-inline std::string toString(const float &value) {
-  return folly::to<std::string>(value);
-}
-inline std::string toString(const double &value) {
-  return folly::to<std::string>(value);
-}
 
 template <typename T>
 inline SharedDebugStringConvertible

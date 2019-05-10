@@ -10,9 +10,8 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const {StyleSheet, Text, View} = require('react-native');
 
 class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   render() {
@@ -24,7 +23,7 @@ class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     borderRadius: 4,
     borderWidth: 0.5,

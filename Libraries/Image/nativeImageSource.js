@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
 // TODO: Change `nativeImageSource` to return this type.
 export type NativeImageSource = {|
@@ -23,6 +23,7 @@ export type NativeImageSource = {|
 type NativeImageSourceSpec = {|
   +android?: string,
   +ios?: string,
+  +default?: string,
 
   // For more details on width and height, see
   // http://facebook.github.io/react-native/docs/images.html#why-not-automatically-size-everything
@@ -47,7 +48,11 @@ type NativeImageSourceSpec = {|
  *
  */
 function nativeImageSource(spec: NativeImageSourceSpec): Object {
-  let uri = Platform.select(spec);
+  let uri = Platform.select({
+    android: spec.android,
+    default: spec.default,
+    ios: spec.ios,
+  });
   if (uri == null) {
     console.warn(
       'nativeImageSource(...): No image name supplied for `%s`:\n%s',

@@ -7,11 +7,12 @@
 
 #include "LayoutableShadowNode.h"
 
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/conversions.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/ShadowNode.h>
+#include <react/debug/DebugStringConvertibleItem.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -21,11 +22,11 @@ LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
 }
 
 bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
+  ensureUnsealed();
+
   if (layoutMetrics_ == layoutMetrics) {
     return false;
   }
-
-  ensureUnsealed();
 
   layoutMetrics_ = layoutMetrics;
   return true;
@@ -35,24 +36,41 @@ bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
   return false;
 }
 
-void LayoutableShadowNode::cleanLayout() {
-  isLayoutClean_ = true;
+Transform LayoutableShadowNode::getTransform() const {
+  return Transform::Identity();
 }
 
-void LayoutableShadowNode::dirtyLayout() {
-  isLayoutClean_ = false;
-}
+LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
+    const LayoutableShadowNode &ancestorLayoutableShadowNode) const {
+  auto &ancestorShadowNode =
+      dynamic_cast<const ShadowNode &>(ancestorLayoutableShadowNode);
+  auto &shadowNode = dynamic_cast<const ShadowNode &>(*this);
 
-bool LayoutableShadowNode::getIsLayoutClean() const {
-  return isLayoutClean_;
-}
+  auto ancestors = shadowNode.getAncestors(ancestorShadowNode);
 
-bool LayoutableShadowNode::getHasNewLayout() const {
-  return hasNewLayout_;
-};
+  if (ancestors.size() == 0) {
+    return EmptyLayoutMetrics;
+  }
 
-void LayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
-  hasNewLayout_ = hasNewLayout;
+  auto layoutMetrics = getLayoutMetrics();
+
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
+    auto &currentShadowNode = it->first.get();
+
+    auto layoutableCurrentShadowNode =
+        dynamic_cast<const LayoutableShadowNode *>(&currentShadowNode);
+
+    if (!layoutableCurrentShadowNode) {
+      return EmptyLayoutMetrics;
+    }
+
+    auto origin = layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
+    auto transform = layoutableCurrentShadowNode->getTransform();
+
+    layoutMetrics.frame.origin += origin * transform;
+  }
+
+  return layoutMetrics;
 }
 
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {

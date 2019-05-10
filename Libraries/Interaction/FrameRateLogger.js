@@ -10,9 +10,9 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 /**
  * Flow API for native FrameRateLogger module. If the native module is not installed, function calls
